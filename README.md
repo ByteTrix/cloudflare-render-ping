@@ -23,6 +23,72 @@ A production-ready Cloudflare Worker that automatically pings your Render server
 
 ---
 
+## 🚀 Quick Deployment Summary
+
+**Easy 3-Step Process:**
+1. **🍴 Fork this repository** on GitHub
+2. **☁️ Deploy to Cloudflare** (Workers & Pages → Connect to Git)
+3. **⚙️ Set your Render URL** in environment variables
+
+**Total time: ~5 minutes** ⏱️
+
+---
+
+## 🔧 How to Setup Your Render App URL
+
+There are **2 ways** to configure your Render app URL. Choose the method that works best for you:
+
+### 🚀 Method 1: Environment Variables (Recommended - No Code Editing!)
+
+#### **Step 1: Find Your Render App URL**
+1. Go to your [Render Dashboard](https://dashboard.render.com/)
+2. Click on your web service
+3. Copy the full URL from the service details
+   - Example: `https://myapp-abc123.onrender.com`
+   - Example: `https://my-awesome-api.onrender.com`
+
+#### **Step 2: Set the URL in Cloudflare**
+
+**Option A: Via Cloudflare Dashboard**
+1. Deploy this worker first (don't edit any code)
+2. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
+3. Navigate to **Workers & Pages** → Your Worker
+4. Click **Settings** → **Variables**
+5. Add environment variable:
+   - **Variable name**: `RENDER_APP_URL`
+   - **Value**: `https://your-actual-app.onrender.com`
+   - Click **Add variable** → **Save and Deploy**
+
+**Option B: Via Wrangler CLI**
+```bash
+# Navigate to project folder
+cd d:\Kodo\cloudflare-render-ping
+
+# Set your Render URL
+wrangler secret put RENDER_APP_URL
+# When prompted, enter: https://your-actual-app.onrender.com
+
+# Deploy
+wrangler deploy
+```
+
+### 🔧 Method 2: Edit Code Directly
+
+If you prefer to hardcode the URL in the source code:
+
+1. **Edit `src/index.js`**
+2. **Find this line:**
+   ```js
+   const renderUrl = env.RENDER_APP_URL || "https://your-app.onrender.com";
+   ```
+3. **Replace with your actual URL:**
+   ```js
+   const renderUrl = env.RENDER_APP_URL || "https://myapp-abc123.onrender.com";
+   ```
+4. **Deploy the worker**
+
+---
+
 ## 🚀 Quick Start Guide
 
 ### Step 1: Choose Your Setup Method
@@ -105,65 +171,94 @@ def health_check():
 
 ### Step 3: Deploy to Cloudflare
 
-#### Option A: Deploy via Cloudflare Dashboard (Recommended)
+#### Option A: Fork and Deploy via Cloudflare Dashboard (Recommended)
 
-1. **Push to GitHub:**
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit: Cloudflare Worker for Render ping"
-   git branch -M main
-   git remote add origin https://github.com/YOUR_USERNAME/cloudflare-render-ping.git
+**Step 3.1: Fork this Repository**
+1. **Click the "Fork" button** at the top-right of this GitHub repository
+2. **Choose your GitHub account** as the destination
+3. **Keep the same repository name** or rename it if you prefer
+4. **Click "Create fork"**
+
+**Step 3.2: Deploy to Cloudflare Workers**
+1. **Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)**
+2. **Navigate to "Workers & Pages"** in the left sidebar
+3. **Click "Create Application"**
+4. **Choose "Pages"** → **"Connect to Git"**
+5. **Connect your GitHub account** (if not already connected)
+6. **Select your forked repository** (`your-username/cloudflare-render-ping`)
+7. **Configure deployment settings:**
+   - **Production branch**: `main`
+   - **Framework preset**: `None`
+   - **Build command**: Leave empty
+   - **Build output directory**: Leave empty
+8. **Click "Save and Deploy"**
+9. **Wait for deployment** (usually takes 1-2 minutes)
+
+**Step 3.3: Set Environment Variables** (if using Environment Variable method)
+1. **After successful deployment**, go to your worker in the dashboard
+2. **Click "Settings"** → **"Environment variables"**
+3. **Add your variables:**
+   - **Variable name**: `RENDER_APP_URL`
+   - **Value**: `https://your-actual-app.onrender.com`
+   - **Click "Add variable"**
+4. **Click "Save and deploy"**
+
+#### Option B: Clone and Deploy via Wrangler CLI
+
+If you prefer using the command line:
+
+1. **Fork the repository** (same as Step 3.1 above)
+
+2. **Clone your forked repository:**
+   ```powershell
+   git clone https://github.com/YOUR_USERNAME/cloudflare-render-ping.git
+   cd cloudflare-render-ping
+   ```
+
+3. **Install dependencies:**
+   ```powershell
+   npm install -g wrangler
+   ```
+
+4. **Login to Cloudflare:**
+   ```powershell
+   wrangler login
+   ```
+
+5. **Set environment variables:**
+   ```powershell
+   wrangler secret put RENDER_APP_URL
+   # When prompted, enter: https://your-actual-app.onrender.com
+   ```
+
+6. **Deploy the worker:**
+   ```powershell
+   wrangler deploy
+   ```
+
+#### Option C: Direct Repository Deployment (Alternative)
+
+If you want to deploy without forking:
+
+1. **Download or clone this repository:**
+   ```powershell
+   git clone https://github.com/ORIGINAL_AUTHOR/cloudflare-render-ping.git
+   cd cloudflare-render-ping
+   ```
+
+2. **Create your own GitHub repository:**
+   - Go to GitHub.com → **New Repository**
+   - Name it `cloudflare-render-ping`
+   - Make it public
+   - Don't initialize with README
+
+3. **Push to your new repository:**
+   ```powershell
+   git remote set-url origin https://github.com/YOUR_USERNAME/cloudflare-render-ping.git
    git push -u origin main
    ```
 
-2. **Deploy via Cloudflare Dashboard:**
-   - Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
-   - Navigate to **Workers & Pages**
-   - Click **Create Application**
-   - Choose **Pages** → **Connect to Git**
-   - Select your GitHub repository
-   - Framework preset: **None**
-   - Click **Save and Deploy**
-
-3. **Set Environment Variables** (if using Easy Method):
-   - After deployment, go to your worker in the dashboard
-   - Click **Settings** → **Variables**
-   - Add environment variables:
-     - **Required:**
-       - `RENDER_APP_URL` = `https://your-app-name.onrender.com`
-     - **Optional (with defaults):**
-       - `HEALTH_ENDPOINT` = `/healthz` (default: `/healthz`)
-       - `TIMEOUT_MS` = `30000` (default: 30 seconds)
-       - `RETRY_ATTEMPTS` = `2` (default: 2 attempts)
-     - Click **Save and Deploy**
-
-#### Option B: Deploy via Wrangler CLI
-
-```bash
-# Install Wrangler globally
-npm install -g wrangler
-
-# Login to Cloudflare
-wrangler login
-
-# Set environment variables (if using Easy Method)
-wrangler secret put RENDER_APP_URL
-# Enter your Render URL when prompted
-
-# Optional: Set custom configuration
-wrangler secret put HEALTH_ENDPOINT  
-# Enter "/healthz" when prompted
-
-wrangler secret put TIMEOUT_MS
-# Enter "30000" when prompted
-
-wrangler secret put RETRY_ATTEMPTS
-# Enter "2" when prompted
-
-# Deploy the worker
-wrangler deploy
-```
+4. **Follow Steps 3.2 and 3.3** from Option A above
 
 ---
 
