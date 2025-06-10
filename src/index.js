@@ -1,4 +1,80 @@
 export default {
+  // Handle HTTP requests (when someone visits the worker URL)
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    
+    // Simple status page
+    if (url.pathname === '/' || url.pathname === '/status') {
+      const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Render Ping Worker</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .status { padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        code { background: #f8f9fa; padding: 2px 4px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>🚀 Render Ping Worker</h1>
+    <div class="status success">
+        ✅ Worker is running successfully!
+    </div>
+    <div class="status info">
+        📋 <strong>Configuration:</strong><br>
+        Target URL: <code>${env.RENDER_APP_URL || 'Not configured'}</code><br>
+        Health Endpoint: <code>${env.HEALTH_ENDPOINT || '/healthz'}</code><br>
+        Schedule: Every 14 minutes, 7 AM - 12 PM IST
+    </div>
+    <p><strong>How it works:</strong> This worker automatically pings your Render app every 14 minutes during business hours to keep it awake.</p>
+    <p><strong>Next steps:</strong> ${env.RENDER_APP_URL ? 'Your worker is configured and ready!' : 'Set the RENDER_APP_URL environment variable in your Cloudflare dashboard.'}</p>
+    <hr>
+    <p><small>🔗 <a href="https://github.com/your-username/cloudflare-render-ping">View on GitHub</a></small></p>
+</body>
+</html>`;
+      
+      return new Response(html, {
+        headers: { 'Content-Type': 'text/html' },
+      });
+    }
+    
+    // Handle favicon requests (prevent errors)
+    if (url.pathname === '/favicon.ico') {
+      return new Response('', { status: 404 });
+    }
+    
+    // API endpoint to manually trigger a health check
+    if (url.pathname === '/ping' && request.method === 'POST') {
+      try {
+        // Run the health check manually
+        await this.scheduled(null, env, ctx);
+        return new Response(JSON.stringify({ 
+          success: true, 
+          message: 'Health check triggered successfully',
+          timestamp: new Date().toISOString()
+        }), {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } catch (error) {
+        return new Response(JSON.stringify({ 
+          success: false, 
+          error: error.message,
+          timestamp: new Date().toISOString()
+        }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+    }
+    
+    // Default response for unknown paths
+    return new Response('404 Not Found', { status: 404 });
+  },
+
+  // Handle scheduled cron jobs
   async scheduled(event, env, ctx) {
     // Configuration with environment variables and fallbacks
     const renderUrl = env.RENDER_APP_URL || "https://thekavin.com";
