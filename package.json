@@ -1,0 +1,34 @@
+{
+  "name": "cloudflare-render-ping",
+  "version": "1.0.0",
+  "description": "Professional Cloudflare Worker for keeping Render servers awake with health checks",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "login": "wrangler login",
+    "publish": "wrangler deploy"
+  },
+  "keywords": [
+    "cloudflare-worker",
+    "render",
+    "health-check",
+    "cron",
+    "scheduled",
+    "ping",
+    "keep-alive"
+  ],
+  "author": "Kavin",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kavinthangavel/cloudflare-render-ping.git"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
