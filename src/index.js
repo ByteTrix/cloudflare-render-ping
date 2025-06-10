@@ -22,15 +22,16 @@ export default {
     <h1>🚀 Render Ping Worker</h1>
     <div class="status success">
         ✅ Worker is running successfully!
-    </div>
-    <div class="status info">
+    </div>    <div class="status info">
         📋 <strong>Configuration:</strong><br>
         Target URL: <code>${env.RENDER_APP_URL || 'Not configured'}</code><br>
         Health Endpoint: <code>${env.HEALTH_ENDPOINT || '/healthz'}</code><br>
-        Schedule: Every 14 minutes, 7 AM - 12 PM IST
+        Schedule: Every 14 minutes, 7 AM - 12 PM IST<br>
+        <small><a href="/debug">🔍 View all environment variables</a></small>
     </div>
     <p><strong>How it works:</strong> This worker automatically pings your Render app every 14 minutes during business hours to keep it awake.</p>
     <p><strong>Next steps:</strong> ${env.RENDER_APP_URL ? 'Your worker is configured and ready!' : 'Set the RENDER_APP_URL environment variable in your Cloudflare dashboard.'}</p>
+    ${!env.RENDER_APP_URL ? '<div class="status" style="background:#fff3cd;color:#856404;border:1px solid #ffeaa7;">⚠️ <strong>Setup Required:</strong> Go to Cloudflare Dashboard → Your Worker → Settings → Variables → Add RENDER_APP_URL</div>' : ''}
     <hr>
     <p><small>🔗 <a href="https://github.com/your-username/cloudflare-render-ping">View on GitHub</a></small></p>
 </body>
@@ -44,10 +45,8 @@ export default {
     // Handle favicon requests (prevent errors)
     if (url.pathname === '/favicon.ico') {
       return new Response('', { status: 404 });
-    }
-    
-    // API endpoint to manually trigger a health check
-    if (url.pathname === '/ping' && request.method === 'POST') {
+    }    // API endpoint to manually trigger a health check (GET or POST)
+    if (url.pathname === '/ping' && (request.method === 'GET' || request.method === 'POST')) {
       try {
         // Run the health check manually
         await this.scheduled(null, env, ctx);
@@ -68,6 +67,21 @@ export default {
           headers: { 'Content-Type': 'application/json' },
         });
       }
+    }
+
+    // Debug endpoint to check environment variables
+    if (url.pathname === '/debug') {
+      return new Response(JSON.stringify({
+        environment_variables: {
+          RENDER_APP_URL: env.RENDER_APP_URL || 'NOT SET',
+          HEALTH_ENDPOINT: env.HEALTH_ENDPOINT || 'NOT SET (default: /healthz)',
+          TIMEOUT_MS: env.TIMEOUT_MS || 'NOT SET (default: 30000)',
+          RETRY_ATTEMPTS: env.RETRY_ATTEMPTS || 'NOT SET (default: 2)'
+        },
+        timestamp: new Date().toISOString()
+      }, null, 2), {
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
     
     // Default response for unknown paths

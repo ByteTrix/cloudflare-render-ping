@@ -5,11 +5,13 @@ compatibility_date = "2025-06-10"
 [triggers]
 crons = ["*/14 1-6 * * *"] # 7AM–12PM IST every 14 minutes
 
-# Environment variables (set these in Cloudflare Dashboard or via Wrangler)
+# Environment variables are configured in Cloudflare Dashboard
+# Go to: Cloudflare Dashboard > Workers & Pages > Your Worker > Settings > Variables
+# 
 # Required:
 # RENDER_APP_URL = "https://your-app.onrender.com"
 # 
-# Optional:
-# HEALTH_ENDPOINT = "/healthz"        # Default: "/healthz"
-# TIMEOUT_MS = "30000"               # Default: 30000 (30 seconds)
-# RETRY_ATTEMPTS = "2"               # Default: 2
+# Optional (with defaults):
+# HEALTH_ENDPOINT = "/healthz"
+# TIMEOUT_MS = "30000"
+# RETRY_ATTEMPTS = "2"

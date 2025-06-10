@@ -1,592 +1,422 @@
-# 🚀 Cloudflare Worker: Keep Your Render App Awake
+# 🚀 Render Keep-Alive Worker
 
-A simple, reliable Cloudflare Worker that automatically pings your Render server every 14 minutes during business hours (7 AM - 12 PM IST) to prevent it from going to sleep on the free tier.
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/your-username/cloudflare-render-ping)
 
-## 🎯 What Problem Does This Solve?
+A production-ready Cloudflare Worker that automatically pings your Render applications every 14 minutes during business hours (7 AM - 12 PM IST) to prevent them from going to sleep on the free tier.
 
-**The Problem**: Render's free tier puts apps to sleep after 15 minutes of inactivity, causing slow response times for the first user.
+## 🎯 Problem & Solution
 
-**The Solution**: This worker pings your app every 14 minutes during peak hours, keeping it awake when you need it most.
+**The Challenge**: Render's free tier puts applications to sleep after 15 minutes of inactivity, resulting in cold starts and slow response times for users.
 
-## ✨ Key Features
+**The Solution**: This intelligent worker pings your application every 14 minutes during peak business hours, ensuring optimal availability when your users need it most while conserving resources during off-peak times.
 
-- 🆓 **Completely Free** - Uses Cloudflare's generous free tier
-- ⏰ **Smart Scheduling** - Only pings during business hours to save resources
-- 🛡️ **Production Ready** - Comprehensive error handling and retry logic
-- 🔧 **Zero Maintenance** - Set it once and forget it
-- 📊 **Detailed Logging** - Monitor performance and troubleshoot issues
-- ⚡ **Fast Setup** - 5 minutes from start to finish
+## ✨ Features
 
----
+- 🆓 **Zero Cost** - Runs entirely on Cloudflare's generous free tier
+- ⏰ **Smart Scheduling** - Active only during business hours (7 AM - 12 PM IST)
+- 🛡️ **Production Ready** - Comprehensive error handling, retry logic, and timeout protection
+- 📊 **Detailed Monitoring** - Rich logging and status endpoints for observability
+- 🔧 **Zero Maintenance** - Set once, runs automatically
+- ⚡ **Quick Deploy** - Ready in under 5 minutes
+- 🔄 **Configurable** - Customizable endpoints, timeouts, and schedules
 
-## 🚀 Complete Setup Guide
+## 🚀 Quick Start
 
-### Step 1: Fork This Repository
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v16 or later)
+- [Git](https://git-scm.com/)
+- Cloudflare account (free)
+- Render application URL
 
-1. **Click the "Fork" button** at the top-right of this GitHub page
-2. **Select your GitHub account** as the destination
-3. **Click "Create fork"**
-
+### 1. Clone & Setup
+```powershell
+# Clone the repository
+git clone https://github.com/kavinthangavel/cloudflare-render-ping.git
 ![Fork Repository](https://docs.github.com/assets/images/help/repository/fork_button.jpg)
 
----
+cd cloudflare-render-ping
 
-### Step 2: Get Your Render App URL
+# Install dependencies
+npm install
 
-1. **Go to your [Render Dashboard](https://dashboard.render.com/)**
-2. **Click on your web service**
-3. **Copy the complete URL** from the service overview
-   - It looks like: `https://myapp-abc123.onrender.com`
-   - Or: `https://my-awesome-api.onrender.com`
+# Install Wrangler CLI (if not already installed)
+npm install wrangler --save-dev
+```
 
-📝 **Save this URL** - you'll need it in Step 4!
+### 2. Configure Cloudflare
+```powershell
+# Login to Cloudflare (opens browser for authentication)
+npx wrangler login
 
----
+# Set your Render application URL as a secret
+npx wrangler secret put RENDER_APP_URL
+# When prompted, enter: https://your-app.onrender.com
+```
 
-### Step 3: Deploy to Cloudflare
+### 3. Deploy
+```powershell
+# Deploy the worker to Cloudflare
+npx wrangler deploy
 
-#### 3.1 Create Cloudflare Account (if needed)
-- **Go to [Cloudflare](https://cloudflare.com)** and sign up for free
-- **No domain required** - we're just using Workers
+# Your worker will be available at:
+# https://render-ping-worker.your-subdomain.workers.dev
+```
 
-#### 3.2 Deploy the Worker
-1. **Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)**
-2. **Click "Workers & Pages"** in the left sidebar
-3. **Click "Create Application"**
-4. **Select "Workers"** → **"Create Worker"**
-5. **Name your worker**: `render-ping-worker` (or any name you like)
-6. **Click "Deploy"** (this creates a basic worker)
-7. **Click "Edit code"**
-8. **Copy the entire contents** of your `src/index.js` file
-9. **Paste it into the worker editor** (replace all existing code)
-10. **Click "Save and Deploy"**
+### 4. Verify Deployment
+```powershell
+# Test the worker manually
+curl https://your-worker.workers.dev/ping
 
-**Alternative: Deploy from GitHub (Recommended)**
-1. **Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)**
-2. **Click "Workers & Pages"** in the left sidebar  
-3. **Click "Create Application"**
-4. **Select "Workers"** → **"Deploy from GitHub"**
-5. **Connect your GitHub account** (authorize if prompted)
-6. **Select your forked repository**: `your-username/cloudflare-render-ping`
-7. **Click "Deploy"**
+# View real-time logs
+npx wrangler tail
 
-⏳ **Wait 1-2 minutes** for the deployment to complete.
+# Check configuration
+curl https://your-worker.workers.dev/debug
+```
 
----
+## 📋 CLI Commands Reference
 
-### Step 4: Configure Your Render URL
+Here are all the commands used during development and deployment:
 
-After deployment is successful:
+### Wrangler Commands
+```powershell
+# Authentication
+npx wrangler login                    # Login to Cloudflare
+npx wrangler whoami                   # Check current user
 
-1. **In your Cloudflare dashboard**, click on your newly created worker
-2. **Go to "Settings"** → **"Environment variables"**
-3. **Click "Add variable"**
-4. **Add your Render URL**:
-   - **Variable name**: `RENDER_APP_URL`
-   - **Value**: Your Render URL from Step 2 (e.g., `https://myapp-abc123.onrender.com`)
-   - **Environment**: Production
-5. **Click "Save"**
-6. **Click "Deploy"** to apply the changes
+# Secrets Management
+npx wrangler secret list              # List all secrets
+npx wrangler secret put RENDER_APP_URL # Set application URL
+npx wrangler secret delete {SECRET_NAME} # Remove a secret
 
----
+# Deployment
+npx wrangler deploy                   # Deploy to production
+npx wrangler deploy --dry-run         # Preview deployment
+npx wrangler deploy --name custom-name # Deploy with custom name
 
-### Step 5: Test & Verify
+# Monitoring & Debugging
+npx wrangler tail                     # View real-time logs
+npx wrangler tail --format pretty    # Formatted log output
+npx wrangler dev                      # Run locally for development
 
-#### 5.1 Check Worker Logs
-1. **In Cloudflare dashboard**, go to your worker
-2. **Click "Logs"** or **"Real-time Logs"**
-3. **You should see logs** like:
-   ```
-   ✅ Health check successful!
-   📊 Response time: 250ms
-   🔗 URL: https://your-app.onrender.com/healthz
-   ```
+# Configuration
+npx wrangler generate --template worker # Generate new worker
+npx wrangler init                     # Initialize new project
+```
 
-#### 5.2 Check Your Render App
-1. **Go to your Render dashboard** → Your service → **Logs**
-2. **Look for incoming requests** every 14 minutes
-3. **You should see GET requests** to `/healthz` endpoint
+### Testing Commands
+```powershell
+# Test endpoints
+curl https://your-worker.workers.dev/                # Status page
+curl https://your-worker.workers.dev/ping           # Manual ping
+curl https://your-worker.workers.dev/debug          # Debug info
 
----
+# Test with PowerShell (Windows alternative)
+Invoke-RestMethod -Uri "https://your-worker.workers.dev/ping"
+Invoke-WebRequest -Uri "https://your-worker.workers.dev/" | Select-Object Content
+```
 
-## 🏥 Add a Health Check Endpoint (Recommended)
+## 🔧 Configuration
 
-For best results, add a simple health check endpoint to your Render app:
+### Environment Variables
 
-### Express.js/Node.js
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `RENDER_APP_URL` | ✅ | - | Your Render application URL |
+| `HEALTH_ENDPOINT` | ❌ | `/healthz` | Health check endpoint path |
+| `TIMEOUT_MS` | ❌ | `30000` | Request timeout (milliseconds) |
+| `RETRY_ATTEMPTS` | ❌ | `2` | Number of retry attempts |
+
+### Setting Environment Variables
+```powershell
+# Required: Set your Render app URL
+npx wrangler secret put RENDER_APP_URL
+
+# Optional: Customize health endpoint
+npx wrangler secret put HEALTH_ENDPOINT
+# Enter: /api/health (or your preferred endpoint)
+
+# Optional: Increase timeout for slow apps
+npx wrangler secret put TIMEOUT_MS
+# Enter: 60000 (for 60 seconds)
+
+# Optional: Adjust retry attempts
+npx wrangler secret put RETRY_ATTEMPTS
+# Enter: 3 (for 3 retry attempts)
+```
+
+### Schedule Customization
+
+Edit `wrangler.toml` to modify the ping schedule:
+
+```toml
+[triggers]
+# Current: Every 14 minutes, 7 AM - 12 PM IST
+crons = ["*/14 1-6 * * *"]
+
+# Examples:
+# Every 10 minutes, 24/7
+crons = ["*/10 * * * *"]
+
+# Every 15 minutes, weekdays only, 9 AM - 5 PM UTC
+crons = ["*/15 9-17 * * 1-5"]
+
+# Every 5 minutes, business hours extended
+crons = ["*/5 0-8 * * *"]  # 5:30 AM - 1:30 PM IST
+```
+
+## 📊 Monitoring & Endpoints
+
+### Available Endpoints
+
+| Endpoint | Method | Description | Example Response |
+|----------|--------|-------------|------------------|
+| `/` | GET | Status dashboard | HTML page with configuration |
+| `/ping` | GET/POST | Manual health check | `{"success": true, "message": "Health check triggered"}` |
+| `/debug` | GET | Environment variables | `{"environment_variables": {...}}` |
+
+### Monitoring Commands
+```powershell
+# Real-time log monitoring
+npx wrangler tail --format pretty
+
+# Check worker analytics (in dashboard)
+# Visit: https://dash.cloudflare.com/workers
+
+# Test all endpoints
+curl https://your-worker.workers.dev/
+curl https://your-worker.workers.dev/ping
+curl https://your-worker.workers.dev/debug
+```
+
+### Log Messages
+- `🚀 Starting health check` - Worker initiated
+- `✅ Health check successful!` - Successful ping with response time
+- `⚠️ Server responded but status unclear` - Response received but unexpected format
+- `❌ HTTP Error: XXX` - Server returned error status
+- `⏱️ Request timeout` - Request exceeded timeout limit
+- `🌐 Network error` - Connection or DNS issues
+- `💔 All attempts failed` - All retries exhausted
+
+## 🏥 Health Check Endpoint Setup
+
+### For Your Render Application
+
+Add a health check endpoint to your Render app for optimal monitoring:
+
+#### Node.js/Express
 ```javascript
 app.get('/healthz', (req, res) => {
   res.status(200).json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
-    message: 'Server is alive' 
+    uptime: process.uptime(),
+    memory: process.memoryUsage()
   });
 });
 ```
 
-### Python/Flask
+#### Python/Flask
 ```python
+from datetime import datetime
+import psutil
+
 @app.route('/healthz')
 def health_check():
     return {
         'status': 'ok',
         'timestamp': datetime.now().isoformat(),
-        'message': 'Server is alive'
+        'uptime': time.time() - psutil.boot_time(),
+        'memory': psutil.virtual_memory()._asdict()
     }
 ```
 
-### Python/FastAPI
+#### Python/FastAPI
 ```python
+from datetime import datetime
+from fastapi import FastAPI
+
 @app.get("/healthz")
-def health_check():
+async def health_check():
     return {
         "status": "ok",
         "timestamp": datetime.now().isoformat(),
-        "message": "Server is alive"
+        "service": "My Render App"
     }
 ```
 
-### Don't want to add an endpoint?
-**No problem!** You can ping any existing endpoint:
-- **Homepage**: Set `HEALTH_ENDPOINT` to `/`
-- **API endpoint**: Set `HEALTH_ENDPOINT` to `/api/status`
-- **Any route**: Set `HEALTH_ENDPOINT` to your preferred path
+#### Alternative: Use Existing Endpoints
+If you don't want to add a dedicated health endpoint:
+```powershell
+# Use homepage
+npx wrangler secret put HEALTH_ENDPOINT
+# Enter: /
 
----
-
-## ⚙️ Customization Options
-
-### Change the Health Check Endpoint
-
-By default, the worker pings `/healthz`. To change this:
-
-1. **In Cloudflare dashboard** → Your worker → **Settings** → **Environment variables**
-2. **Add variable**:
-   - **Name**: `HEALTH_ENDPOINT`
-   - **Value**: `/` (for homepage) or `/api/health` (for custom endpoint)
-
-### Change the Schedule
-
-The worker runs every 14 minutes from 7 AM to 12 PM IST. To modify:
-
-1. **Edit `wrangler.toml`** in your forked repository
-2. **Update the cron expression**:
-   ```toml
-   [triggers]
-   # Current: Every 14 minutes, 7 AM-12 PM IST
-   crons = ["*/14 1-6 * * *"]
-   
-   # Examples:
-   # Every 10 minutes, 24/7: ["*/10 * * * *"]
-   # Every 15 minutes, 9 AM-5 PM UTC: ["*/15 9-17 * * *"]
-   # Every 5 minutes, weekdays only: ["*/5 * * * 1-5"]
-   ```
-3. **Commit and push** the changes - Cloudflare will auto-deploy
-
-### Advanced Configuration
-
-| Environment Variable | Default | Description |
-|---------------------|---------|-------------|
-| `RENDER_APP_URL` | *(required)* | Your complete Render app URL |
-| `HEALTH_ENDPOINT` | `/healthz` | Endpoint to ping |
-| `TIMEOUT_MS` | `30000` | Request timeout (30 seconds) |
-| `RETRY_ATTEMPTS` | `2` | Number of retry attempts on failure |
-
----
+# Use existing API endpoint
+npx wrangler secret put HEALTH_ENDPOINT
+# Enter: /api/status
+```
 
 ## 🔍 Troubleshooting
 
-### ❌ "No fetch handler!" Error
-**Problem**: You deployed this as a Cloudflare Page instead of a Worker.
-**Solution**: 
-1. **Delete the Pages deployment** in Cloudflare dashboard
-2. **Deploy as a Worker instead** (see Step 3.2 above)
-3. **Choose "Workers" → "Create Worker"** NOT "Pages"
+### Common Issues & Solutions
 
-### ❌ "Configuration Error: RENDER_APP_URL not set"
-**Solution**: Set the `RENDER_APP_URL` environment variable in Cloudflare dashboard.
+#### ❌ Environment Variable Not Found
+```powershell
+# Problem: Worker shows "Not configured"
+# Solution: Set the secret properly
+npx wrangler secret put RENDER_APP_URL
+# Enter your full Render URL: https://your-app.onrender.com
 
-### ❌ "All attempts failed" / "Network error"
-**Possible causes**:
-- ✅ Check your Render URL is correct
-- ✅ Ensure your Render app is running
-- ✅ Test the URL manually in a browser
+# Verify it was set
+npx wrangler secret list
+```
 
-### ❌ "HTTP 404" error
-**Possible causes**:
-- ✅ Health endpoint doesn't exist - try setting `HEALTH_ENDPOINT` to `/`
-- ✅ Check your app's routes are working
+#### ❌ Deployment Failures
+```powershell
+# Problem: "No fetch handler" error
+# Solution: Check your main entry point in wrangler.toml
+# Ensure: main = "src/index.js"
 
-### ❌ "Request timeout"
-**Possible causes**:
-- ✅ Your app might be cold-starting (normal for first request)
-- ✅ Increase `TIMEOUT_MS` to `60000` (60 seconds)
+# Problem: Wrangler login issues
+# Solution: Clear auth and re-login
+npx wrangler logout
+npx wrangler login
+```
 
-### ❌ Worker not running
-**Check**:
-- ✅ Deployment was successful in Cloudflare dashboard
-- ✅ No errors in the deployment logs
-- ✅ Environment variable is set correctly
+#### ❌ Health Check Failures
+```powershell
+# Problem: "All attempts failed"
+# Solution: Test your Render URL manually
+curl https://your-app.onrender.com/healthz
 
-### ❌ App still goes to sleep
-**Try**:
-- ✅ Reduce ping interval to every 10 minutes: `["*/10 1-6 * * *"]`
-- ✅ Extend the time window: `["*/14 0-8 * * *"]` (6:30 AM - 1:30 PM IST)
+# If 404, try homepage instead
+npx wrangler secret put HEALTH_ENDPOINT
+# Enter: /
+```
 
----
+#### ❌ Worker Not Running
+```powershell
+# Check deployment status
+npx wrangler tail
 
-## 📊 Understanding the Logs
+# Verify cron schedule is correct
+Get-Content wrangler.toml
 
-### Success Messages
-- `🚀 Starting health check` - Worker is starting
-- `✅ Health check successful!` - Ping was successful
-- `📊 Response time: XXXms` - How fast your app responded
+# Test manual trigger
+curl https://your-worker.workers.dev/ping
+```
 
-### Warning Messages
-- `⚠️ Server responded but status unclear` - Got response but wrong format
-- `⚠️ JSON parse failed` - Response wasn't valid JSON (usually fine)
+### Debug Commands
+```powershell
+# Check worker configuration
+curl https://your-worker.workers.dev/debug
 
-### Error Messages
-- `❌ HTTP Error: 404` - Endpoint not found
-- `❌ HTTP Error: 500` - Server error in your app
-- `⏱️ Request timeout` - App took too long to respond
-- `🌐 Network error` - Connection problem
+# View deployment info
+npx wrangler dev --local-protocol https
 
----
+# Check if secrets are set
+npx wrangler secret list
 
-## 💰 Cost Analysis
-
-### Cloudflare (Free Tier)
-- ✅ **100,000 requests/day included**
-- ✅ **This worker uses ~75 requests/day**
-- ✅ **Completely free for this use case**
-
-### Render (Free Tier)
-- ✅ **Stays awake during business hours**
-- ✅ **Still sleeps at night to save resources**
-- ✅ **No additional costs**
-
----
-
-## 🔄 How It Works
-
-1. **Cloudflare's cron scheduler** triggers the worker every 14 minutes
-2. **Worker sends a GET request** to your Render app's health endpoint
-3. **Your app responds**, resetting Render's 15-minute sleep timer
-4. **Worker logs the result** for monitoring
-5. **If the ping fails**, worker retries automatically
-6. **Process repeats** during business hours only
-
----
+# Test Render app directly
+curl https://your-app.onrender.com/healthz -v
+```
 
 ## 📁 Project Structure
 
 ```
 cloudflare-render-ping/
 ├── src/
-│   └── index.js          # Main worker code
+│   └── index.js          # Main worker logic
 ├── wrangler.toml         # Cloudflare configuration
-├── package.json          # Dependencies
-├── .gitignore           # Git ignore rules
-└── README.md            # This guide
+├── package.json          # Dependencies and scripts
+├── .gitignore           # Git ignore patterns
+└── README.md            # This documentation
 ```
 
----
+## 💰 Cost Analysis
 
-## 🤝 Need Help?
+### Cloudflare Workers (Free Tier)
+- ✅ **100,000 requests/day** included
+- ✅ **~103 requests/day** used (7×14.7 pings×5 weekdays)
+- ✅ **Completely free** for this use case
+- ✅ **10ms CPU time** per request (well under 10,000ms limit)
 
-1. **Check the troubleshooting section** above
-2. **Review your Cloudflare worker logs** for error messages
-3. **Test your Render URL manually** in a browser
-4. **Open an issue** in this repository if you're still stuck
+### Render (Free Tier)
+- ✅ **750 hours/month** of runtime
+- ✅ **Stays awake** during business hours only
+- ✅ **Sleeps at night** to conserve hours
+- ✅ **No additional costs**
 
----
+## 🔄 Workflow Overview
 
-## 🎉 You're All Set!
+1. **Cron Trigger** - Cloudflare's scheduler activates worker every 14 minutes
+2. **Environment Check** - Worker validates configuration
+3. **Health Request** - GET request sent to your Render app
+4. **Response Validation** - Check for successful response
+5. **Retry Logic** - Automatic retries on failure
+6. **Logging** - Detailed logs for monitoring
+7. **Completion** - Process repeats next cycle
 
-Your Render app will now stay awake during business hours automatically. No more slow cold starts for your users! 
+## 🛠️ Development
 
-**Want to check if it's working?** Look for regular GET requests in your Render app logs every 14 minutes.
+### Local Development
+```powershell
+# Run worker locally
+npx wrangler dev
 
----
+# Test locally (in another terminal)
+curl http://localhost:8787/ping
 
-### Step 3: Deploy to Cloudflare
-
-#### Option A: Fork and Deploy via Cloudflare Dashboard (Recommended)
-
-**Step 3.1: Fork this Repository**
-1. **Click the "Fork" button** at the top-right of this GitHub repository
-2. **Choose your GitHub account** as the destination
-3. **Keep the same repository name** or rename it if you prefer
-4. **Click "Create fork"**
-
-**Step 3.2: Deploy to Cloudflare Workers**
-1. **Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)**
-2. **Navigate to "Workers & Pages"** in the left sidebar
-3. **Click "Create Application"**
-4. **Choose "Pages"** → **"Connect to Git"**
-5. **Connect your GitHub account** (if not already connected)
-6. **Select your forked repository** (`your-username/cloudflare-render-ping`)
-7. **Configure deployment settings:**
-   - **Production branch**: `main`
-   - **Framework preset**: `None`
-   - **Build command**: Leave empty
-   - **Build output directory**: Leave empty
-8. **Click "Save and Deploy"**
-9. **Wait for deployment** (usually takes 1-2 minutes)
-
-**Step 3.3: Set Environment Variables** (if using Environment Variable method)
-1. **After successful deployment**, go to your worker in the dashboard
-2. **Click "Settings"** → **"Environment variables"**
-3. **Add your variables:**
-   - **Variable name**: `RENDER_APP_URL`
-   - **Value**: `https://your-actual-app.onrender.com`
-   - **Click "Add variable"**
-4. **Click "Save and deploy"**
-
-#### Option B: Clone and Deploy via Wrangler CLI
-
-If you prefer using the command line:
-
-1. **Fork the repository** (same as Step 3.1 above)
-
-2. **Clone your forked repository:**
-   ```powershell
-   git clone https://github.com/YOUR_USERNAME/cloudflare-render-ping.git
-   cd cloudflare-render-ping
-   ```
-
-3. **Install dependencies:**
-   ```powershell
-   npm install -g wrangler
-   ```
-
-4. **Login to Cloudflare:**
-   ```powershell
-   wrangler login
-   ```
-
-5. **Set environment variables:**
-   ```powershell
-   wrangler secret put RENDER_APP_URL
-   # When prompted, enter: https://your-actual-app.onrender.com
-   ```
-
-6. **Deploy the worker:**
-   ```powershell
-   wrangler deploy
-   ```
-
-#### Option C: Direct Repository Deployment (Alternative)
-
-If you want to deploy without forking:
-
-1. **Download or clone this repository:**
-   ```powershell
-   git clone https://github.com/ORIGINAL_AUTHOR/cloudflare-render-ping.git
-   cd cloudflare-render-ping
-   ```
-
-2. **Create your own GitHub repository:**
-   - Go to GitHub.com → **New Repository**
-   - Name it `cloudflare-render-ping`
-   - Make it public
-   - Don't initialize with README
-
-3. **Push to your new repository:**
-   ```powershell
-   git remote set-url origin https://github.com/YOUR_USERNAME/cloudflare-render-ping.git
-   git push -u origin main
-   ```
-
-4. **Follow Steps 3.2 and 3.3** from Option A above
-
----
-
-## ⚙️ Advanced Configuration
-
-### 🔧 Environment Variables Reference
-
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `RENDER_APP_URL` | ✅ Yes | - | Your Render app URL (e.g., `https://myapp.onrender.com`) |
-| `HEALTH_ENDPOINT` | ❌ No | `/healthz` | Health check endpoint path |
-| `TIMEOUT_MS` | ❌ No | `30000` | Request timeout in milliseconds (30 seconds) |
-| `RETRY_ATTEMPTS` | ❌ No | `2` | Number of retry attempts on failure |
-
-### 🕐 Change the Schedule
-
-Edit the cron expression in `wrangler.toml`:
-
-```toml
-[triggers]
-# Current: Every 14 minutes from 1:30-6:30 AM UTC (7 AM-12 PM IST)
-crons = ["*/14 1-6 * * *"]
-
-# Examples:
-# Every 14 minutes, 24/7: ["*/14 * * * *"]
-# Every 15 minutes, 9 AM-5 PM UTC: ["*/15 9-17 * * *"]
-# Every 5 minutes, weekdays only: ["*/5 * * * 1-5"]
-# Once every hour: ["0 * * * *"]
+# Debug mode with logs
+npx wrangler dev --local-protocol https --log-level debug
 ```
 
-**🌍 Timezone Converter:**
-- IST is UTC+5:30
-- 7:00 AM IST = 1:30 AM UTC
-- 12:00 PM IST = 6:30 AM UTC
+### Making Changes
+```powershell
+# Edit the worker code
+code src/index.js
 
-### 🎯 Change the Ping Frequency
+# Update configuration
+code wrangler.toml
 
-```toml
-# Every 5 minutes (more frequent)
-crons = ["*/5 1-6 * * *"]
+# Deploy changes
+npx wrangler deploy
 
-# Every 30 minutes (less frequent)
-crons = ["*/30 1-6 * * *"]
-
-# Every hour
-crons = ["0 1-6 * * *"]
+# View updated logs
+npx wrangler tail
 ```
 
-### 🔧 Change the Worker Name
+### Testing New Features
+```powershell
+# Deploy to a staging environment
+npx wrangler deploy --name render-ping-staging
 
-In `wrangler.toml`:
-```toml
-name = "my-custom-render-ping-worker"
+# Test staging
+curl https://render-ping-staging.your-subdomain.workers.dev/ping
+
+# Deploy to production when ready
+npx wrangler deploy
 ```
-
-### 📊 Add Better Logging
-
-Update `src/index.js` for more detailed logs:
-
-```js
-export default {
-  async scheduled(event, env, ctx) {
-    const startTime = Date.now();
-    
-    try {
-      const response = await fetch("https://your-app.onrender.com/healthz", {
-        method: "GET",
-      });
-      
-      const duration = Date.now() - startTime;
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.status === 'ok') {
-          console.log(`✅ Ping successful: Server responded with status 'ok' (${duration}ms)`);
-          console.log(`🕐 Timestamp: ${new Date().toISOString()}`);
-        } else {
-          console.log(`⚠️ Ping completed but unexpected status: ${data.status || 'unknown'} (${duration}ms)`);
-        }
-      } else {
-        console.log(`❌ Ping failed: HTTP ${response.status} (${duration}ms)`);
-      }
-    } catch (error) {
-      console.error(`❌ Ping failed: ${error.message}`);
-    }
-  },
-};
-```
-
----
-
-## 🔍 Production Monitoring & Troubleshooting
-
-### 📊 Log Messages Explained
-
-The worker provides detailed logging for monitoring:
-
-- `🚀 Starting health check` - Beginning of check
-- `✅ Health check successful!` - Successful ping with response time
-- `⚠️ Server responded but status unclear` - Got response but wrong status
-- `❌ HTTP Error` - Server returned error status code
-- `⏱️ Request timeout` - Request took longer than timeout limit
-- `🌐 Network error` - Connection/DNS issues
-- `💔 All attempts failed` - All retries exhausted
-
-### ✅ How to Verify It's Working
-
-1. **View Real-time Logs in Cloudflare:**
-   - Go to Workers & Pages → Your Worker
-   - Click **Logs** tab (or **Real-time Logs**)
-   - Look for messages like `✅ Health check successful!`
-   - Check response times and timestamps
-
-2. **Monitor Your Render App:**
-   - Go to Render Dashboard → Your Service → **Logs**
-   - Look for incoming GET requests to your health endpoint
-   - Should see requests every 14 minutes during business hours
-
-3. **Check Worker Analytics:**
-   - In Cloudflare dashboard, go to **Analytics** tab
-   - Monitor request success rates and execution duration
-
-### 🚨 Common Issues & Solutions
-
-**❌ "Configuration Error: RENDER_APP_URL not set"**
-- Set the `RENDER_APP_URL` environment variable in Cloudflare dashboard
-- Make sure it's your actual Render URL, not the placeholder
-
-**❌ "All attempts failed" / "Network error"**
-- Verify your Render app URL is correct and accessible
-- Check if your Render app is actually running
-- Test the URL manually in a browser
-
-**❌ "Request timeout after 30000ms"**
-- Your Render app might be taking too long to respond
-- Increase `TIMEOUT_MS` environment variable
-- Check if your app is cold-starting (normal for first request)
-
-**❌ "HTTP 404" or "HTTP 500"**
-- Verify the health endpoint exists (`/healthz` by default)
-- Check your app's logs for internal errors
-- Consider using a simpler endpoint like `/` (homepage)
-
-**❌ "Worker not triggering"**
-- Verify the cron schedule in `wrangler.toml`
-- Check Cloudflare Workers dashboard for deployment errors
-- Free tier workers might have slight delays
-
-**❌ "JSON parse failed"**
-- Your endpoint might be returning plain text instead of JSON
-- The worker handles this automatically, but check your endpoint response
-- Free tier workers might have some delay
-
-**❌ "Render app still sleeping"**
-- Ensure you're pinging the correct URL
-- Check that your Render app responds to the health check endpoint
-- Consider pinging more frequently (every 10 minutes instead of 14)
-
----
-
-## 💰 Cost Breakdown
-
-**Cloudflare Workers (Free Tier):**
-- ✅ 100,000 requests/day
-- ✅ This worker uses ~103 requests/day (7×24min×5 days ≈ 103)
-- ✅ Completely free for this use case
-
-**Render (Free Tier):**
-- ✅ Stays awake during business hours
-- ✅ Sleeps when not needed (saves resources)
-
----
-
-## 📁 Repository Structure
-
-```
-cloudflare-render-ping/
-├── README.md          # This file with instructions
-├── wrangler.toml      # Cloudflare Worker configuration
-└── src/
-    └── index.js       # Main worker code
-```
-
----
 
 ## 🤝 Contributing
 
-Feel free to submit issues or pull requests to improve this worker!
+1. **Fork** the repository
+2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
+3. **Commit** changes: `git commit -m 'Add amazing feature'`
+4. **Push** to branch: `git push origin feature/amazing-feature`
+5. **Open** a Pull Request
 
+## 📄 License
 
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [Cloudflare Workers](https://workers.cloudflare.com/) for the serverless platform
+- [Render](https://render.com/) for the hosting platform
+- [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/) for deployment tools
+
+---
+
+**🎯 Ready to keep your Render app alive? Follow the [Quick Start](#-quick-start) guide above!**
