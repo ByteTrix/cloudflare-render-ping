@@ -1,12 +1,14 @@
 export default {
   async scheduled(event, env, ctx) {
     // Configuration with environment variables and fallbacks
-    const renderUrl = env.RENDER_APP_URL || "https://your-app.onrender.com";
+    const renderUrl = env.RENDER_APP_URL || "https://thekavin.com";
     const healthEndpoint = env.HEALTH_ENDPOINT || "/healthz";
     const timeout = parseInt(env.TIMEOUT_MS) || 30000; // 30 seconds default
     const retryAttempts = parseInt(env.RETRY_ATTEMPTS) || 2;
-    const fullUrl = `${renderUrl}${healthEndpoint}`;    // Validation
-    if (!renderUrl || renderUrl === "https://your-app.onrender.com") {
+    const fullUrl = `${renderUrl}${healthEndpoint}`;
+
+    // Validation
+    if (!renderUrl || renderUrl === "https://thekavin.com") {
       console.error(`❌ Configuration Error: RENDER_APP_URL not set or using default placeholder`);
       return;
     }

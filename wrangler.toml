@@ -1,4 +1,5 @@
 name = "render-ping-worker"
+main = "src/index.js"
 compatibility_date = "2025-06-10"
 
 [triggers]
