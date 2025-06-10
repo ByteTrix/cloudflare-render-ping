@@ -33,7 +33,7 @@ export default {
     <p><strong>Next steps:</strong> ${env.RENDER_APP_URL ? 'Your worker is configured and ready!' : 'Set the RENDER_APP_URL environment variable in your Cloudflare dashboard.'}</p>
     ${!env.RENDER_APP_URL ? '<div class="status" style="background:#fff3cd;color:#856404;border:1px solid #ffeaa7;">⚠️ <strong>Setup Required:</strong> Go to Cloudflare Dashboard → Your Worker → Settings → Variables → Add RENDER_APP_URL</div>' : ''}
     <hr>
-    <p><small>🔗 <a href="https://github.com/your-username/cloudflare-render-ping">View on GitHub</a></small></p>
+    <p><small>🔗 <a href="https://github.com/kavinthangavel/cloudflare-render-ping">View on GitHub</a></small></p>
 </body>
 </html>`;
       
