@@ -29,10 +29,10 @@ A production-ready Cloudflare Worker that automatically pings your Render applic
 - Render application URL
 
 ### 1. Clone & Setup
+
 ```powershell
 # Clone the repository
 git clone https://github.com/kavinthangavel/cloudflare-render-ping.git
-![Fork Repository](https://docs.github.com/assets/images/help/repository/fork_button.jpg)
 
 cd cloudflare-render-ping
 
