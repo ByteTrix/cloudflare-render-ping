@@ -155,8 +155,8 @@ Edit `wrangler.toml` to modify the ping schedule:
 crons = ["*/14 1-6 * * *"]
 
 # Examples:
-# Every 10 minutes, 24/7
-crons = ["*/10 * * * *"]
+# Every 14 minutes, 24/7
+crons = ["*/14 * * * *"]
 
 # Every 15 minutes, weekdays only, 9 AM - 5 PM UTC
 crons = ["*/15 9-17 * * 1-5"]
@@ -322,17 +322,6 @@ npx wrangler secret list
 curl https://your-app.onrender.com/healthz -v
 ```
 
-## 📁 Project Structure
-
-```
-cloudflare-render-ping/
-├── src/
-│   └── index.js          # Main worker logic
-├── wrangler.toml         # Cloudflare configuration
-├── package.json          # Dependencies and scripts
-├── .gitignore           # Git ignore patterns
-└── README.md            # This documentation
-```
 
 ## 💰 Cost Analysis
 
@@ -360,17 +349,6 @@ cloudflare-render-ping/
 
 ## 🛠️ Development
 
-### Local Development
-```powershell
-# Run worker locally
-npx wrangler dev
-
-# Test locally (in another terminal)
-curl http://localhost:8787/ping
-
-# Debug mode with logs
-npx wrangler dev --local-protocol https --log-level debug
-```
 
 ### Making Changes
 ```powershell
@@ -406,16 +384,6 @@ npx wrangler deploy
 3. **Commit** changes: `git commit -m 'Add amazing feature'`
 4. **Push** to branch: `git push origin feature/amazing-feature`
 5. **Open** a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [Cloudflare Workers](https://workers.cloudflare.com/) for the serverless platform
-- [Render](https://render.com/) for the hosting platform
-- [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/) for deployment tools
 
 ---
 
