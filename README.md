@@ -1,6 +1,6 @@
 # 🚀 Render Keep-Alive Worker
 
-[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/kavinthangavel/cloudflare-render-ping)
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/ByteTrix/cloudflare-render-ping)
 
 A production-ready Cloudflare Worker that automatically pings your Render applications every 14 minutes during business hours (7 AM - 12 PM IST) to prevent them from going to sleep on the free tier.
 
