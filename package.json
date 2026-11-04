@@ -1,6 +1,7 @@
 {
   "name": "cloudflare-render-ping",
   "version": "1.0.0",
+  "type": "module",
   "description": "Professional Cloudflare Worker for keeping Render servers awake with health checks",
   "main": "src/index.js",
   "scripts": {
@@ -8,7 +9,8 @@
     "deploy": "wrangler deploy",
     "tail": "wrangler tail",
     "login": "wrangler login",
-    "publish": "wrangler deploy"
+    "publish": "wrangler deploy",
+    "test": "node --test"
   },
   "keywords": [
     "cloudflare-worker",

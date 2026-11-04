@@ -3,19 +3,21 @@ main = "src/index.js"
 compatibility_date = "2025-06-10"
 
 [triggers]
-crons = ["*/14 * * * *"] # every 14 minutes
+# Run every 10 minutes, 24/7.
+# Render's free tier puts web services to sleep after 15 minutes of inactivity.
+# Running every 10 minutes (*/10 * * * *) provides a 5-minute safety margin against
+# Cloudflare scheduled execution jitter, network latency, and retries.
+# 144 executions/day is well within Cloudflare's 100,000 requests/day free tier.
+crons = ["*/10 * * * *"]
 
 [observability.logs]
 enabled = true
 
-
-# Environment variables are configured in Cloudflare Dashboard
-# Go to: Cloudflare Dashboard > Workers & Pages > Your Worker > Settings > Variables
-# 
-# Required:
-# RENDER_APP_URL = "https://your-app.onrender.com"
-# 
-# Optional (with defaults):
-# HEALTH_ENDPOINT = "/healthz"
-# TIMEOUT_MS = "30000"
-# RETRY_ATTEMPTS = "2"
+[vars]
+# Target Render service (can be overridden via Cloudflare Dashboard secrets/variables)
+RENDER_APP_URL = "https://songless-unlimited.onrender.com"
+HEALTH_ENDPOINT = "/healthz"
+FALLBACK_ENDPOINT = "/"
+TIMEOUT_MS = "30000"
+RETRY_ATTEMPTS = "2"
+ENABLE_FALLBACK = "true"
