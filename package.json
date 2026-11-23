@@ -24,7 +24,7 @@
   "author": "Kavin",
   "license": "MIT",
   "devDependencies": {
-    "wrangler": "^4.59.1"
+    "wrangler": "^4.166.0"
   },
   "repository": {
     "type": "git",
